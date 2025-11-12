@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>گۆشەتەوژمی پارێزراو</title>
+<style>
+  body {
+    margin: 0;
+    background: #0d0d0d;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: sans-serif;
+  }
+  canvas {
+    background: radial-gradient(circle at center, #1a1a1a 40%, #000 100%);
+    border-radius: 50%;
+  }
+  .control {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  input[type="range"] {
+    width: 200px;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas" width="400" height="400"></canvas>
+
+<div class="control">
+  <label>r</label>
+  <input id="particleRange" type="range" min="0" max="1" step="0.01" value="1">
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const range = document.getElementById('particleRange');
+
+const cx = canvas.width / 2;
+const cy = canvas.height / 2;
+const discRadius = 150;
+let particleRatio = 1; // 1 = edge, 0 = center
+let angle = 0;
+
+function drawDisc() {
+  ctx.beginPath();
+  ctx.arc(cx, cy, discRadius + 50, 0, Math.PI * 2);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function drawParticle() {
+  const radius = discRadius * (particleRatio + 0.1);
+  const px = cx + Math.cos(angle) * (radius);
+  const py = cy + Math.sin(angle) * (radius);
+
+  ctx.beginPath();
+  ctx.arc(px, py, 8, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff8800';
+  ctx.shadowColor = '#ff8800';
+  ctx.shadowBlur = 15;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawDisc();
+  drawParticle();
+
+  // speed increases as particle gets closer to center
+  const speed = 0.05 + (1 - particleRatio) * 0.3;
+  angle += speed;
+
+  requestAnimationFrame(animate);
+}
+
+range.addEventListener('input', e => {
+  particleRatio = parseFloat(e.target.value);
+});
+
+animate();
+</script>
+
+</body>
+</html>
